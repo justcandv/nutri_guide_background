@@ -13,7 +13,7 @@ public class UserRegisterDTO {
     
     private String email;
     private String avatarUrl;
-    private Integer gender;
+    private String gender;
     private Double height;
     private Double weight;
 } 

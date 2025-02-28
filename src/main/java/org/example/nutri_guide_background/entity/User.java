@@ -24,7 +24,7 @@ public class User {
     private String avatarUrl;
     
     @TableField("gender")
-    private Integer gender;
+    private String gender;
     
     @TableField("height")
     private Double height;

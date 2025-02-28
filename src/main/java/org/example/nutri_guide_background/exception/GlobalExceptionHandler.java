@@ -2,7 +2,6 @@ package org.example.nutri_guide_background.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.nutri_guide_background.common.Result;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,10 +32,5 @@ public class GlobalExceptionHandler {
     public Result<?> handleBusinessException(BusinessException e) {
         log.error("业务异常：{}", e.getMessage());
         return Result.error(e.getMessage());
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public Result<?> handleAccessDeniedException(AccessDeniedException e) {
-        return Result.error("没有访问权限");
     }
 } 
