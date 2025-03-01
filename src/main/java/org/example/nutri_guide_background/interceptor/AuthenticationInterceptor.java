@@ -28,9 +28,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         // 获取token
-        String token = request.getHeader("Authorization");
-        if (StringUtils.isEmpty(token)) {
+        String authHeader = request.getHeader("Authorization");
+        if (StringUtils.isEmpty(authHeader)) {
             throw new RuntimeException("未登录");
+        }
+        
+        // 提取token，处理Bearer前缀
+        String token = authHeader;
+        if (authHeader.startsWith("Bearer ")) {
+            token = authHeader.substring(7);
         }
 
         // 验证token
