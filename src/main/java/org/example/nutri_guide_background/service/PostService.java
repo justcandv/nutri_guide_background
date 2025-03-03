@@ -51,4 +51,11 @@ public interface PostService extends IService<Post> {
      * @return 是否删除成功
      */
     boolean deletePost(Long id);
-} 
+
+    /**
+     * 获取帖子
+     *
+     * @return 帖子列表
+     */
+    List<Post> getPosts(Long page);
+}

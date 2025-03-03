@@ -1,6 +1,7 @@
 package org.example.nutri_guide_background.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.nutri_guide_background.dto.PostCreateDTO;
 import org.example.nutri_guide_background.dto.PostUpdateDTO;
@@ -80,5 +81,19 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         
         post.setIsDeleted(1);
         return updateById(post);
+    }
+
+    @Override
+    public List<Post> getPosts(Long page) {
+        // 设置分页参数（页码从1开始）
+        Page<Post> pageParam = new Page<>(page, 10); // 每页10条
+
+        LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Post::getIsDeleted, 0)
+                .orderByDesc(Post::getCreateTime);
+
+        // 执行分页查询
+        Page<Post> postPage = page(pageParam, wrapper);
+        return postPage.getRecords();
     }
 }

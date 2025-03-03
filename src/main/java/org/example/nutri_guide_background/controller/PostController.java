@@ -69,7 +69,16 @@ public class PostController {
         List<Post> posts = postService.getAllPosts();
         return Result.success(posts);
     }
-    
+
+    /**
+     * 获取帖子
+     */
+    @GetMapping("/page/{page}")
+    public Result<List<Post>> getPosts(@PathVariable Long page) {
+        List<Post> posts = postService.getPosts(page);
+        return Result.success(posts);
+    }
+
     /**
      * 获取单个帖子
      */
