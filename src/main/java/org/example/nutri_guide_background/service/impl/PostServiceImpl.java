@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.nutri_guide_background.dto.PostCreateDTO;
 import org.example.nutri_guide_background.dto.PostUpdateDTO;
 import org.example.nutri_guide_background.entity.Post;
+import org.example.nutri_guide_background.entity.User;
 import org.example.nutri_guide_background.mapper.PostMapper;
+import org.example.nutri_guide_background.mapper.UserMapper;
 import org.example.nutri_guide_background.service.PostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +21,22 @@ import java.util.List;
  */
 @Service
 public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements PostService {
-    
+
+    @Autowired
+    private UserMapper userMapper;
+
+    // 填充用户信息的辅助方法
+    private void fillUserInfo(Post post) {
+        if (post != null && post.getUserId() != null) {
+            User user = userMapper.selectById(post.getUserId());
+            if (user != null) {
+                post.setAvatarUrl(user.getAvatarUrl());
+                post.setUserName(user.getUsername());
+            }
+            System.out.println("User : " + post.getUserName());
+        }
+    }
+
     @Override
     public Post createPost(PostCreateDTO dto) {
         Post post = new Post();
@@ -33,13 +51,31 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         save(post);
         return post;
     }
-    
+
     @Override
     public List<Post> getAllPosts() {
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Post::getIsDeleted, 0)
                .orderByDesc(Post::getCreateTime);
-        return list(wrapper);
+        List<Post> posts = list(wrapper);
+        posts.forEach(this::fillUserInfo);
+        return posts;
+    }
+
+    @Override
+    public List<Post> getPosts(Long page) {
+        // 设置分页参数（页码从1开始）
+        Page<Post> pageParam = new Page<>(page, 10); // 每页10条
+
+        LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Post::getIsDeleted, 0)
+                .orderByDesc(Post::getCreateTime);
+
+        // 执行分页查询
+        Page<Post> postPage = page(pageParam, wrapper);
+        List<Post> posts = postPage.getRecords();
+        posts.forEach(this::fillUserInfo);
+        return posts;
     }
     
     @Override
@@ -47,7 +83,9 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Post::getId, id)
                .eq(Post::getIsDeleted, 0);
-        return getOne(wrapper);
+        Post post = getOne(wrapper);
+        fillUserInfo(post);
+        return post;
     }
     
     @Override
@@ -81,19 +119,5 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         
         post.setIsDeleted(1);
         return updateById(post);
-    }
-
-    @Override
-    public List<Post> getPosts(Long page) {
-        // 设置分页参数（页码从1开始）
-        Page<Post> pageParam = new Page<>(page, 10); // 每页10条
-
-        LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Post::getIsDeleted, 0)
-                .orderByDesc(Post::getCreateTime);
-
-        // 执行分页查询
-        Page<Post> postPage = page(pageParam, wrapper);
-        return postPage.getRecords();
     }
 }

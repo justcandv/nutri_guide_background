@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -25,7 +26,6 @@ public class Post {
      * 用户ID
      */
     private Long userId;
-    
     /**
      * 帖子标题
      */
@@ -56,4 +56,16 @@ public class Post {
      * 创建时间
      */
     private LocalDateTime createTime;
+    
+    /**
+     * 用户头像
+     */
+    @TableField(exist = false)
+    private String avatarUrl;
+    
+    /**
+     * 用户名
+     */
+    @TableField(exist = false)
+    private String userName;
 } 
