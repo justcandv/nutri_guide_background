@@ -14,7 +14,6 @@ public class CommentCreateDTO {
     /**
      * 用户ID
      */
-    @JsonProperty("user_id")
     @NotNull(message = "用户ID不能为空")
     private Long userId;
     

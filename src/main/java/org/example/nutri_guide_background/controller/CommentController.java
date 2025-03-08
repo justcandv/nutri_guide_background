@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * 评论控制器
  */
@@ -30,6 +32,19 @@ public class CommentController {
             return Result.error("评论不存在");
         }
         return Result.success(comment);
+    }
+    
+    /**
+     * 获取帖子下的所有评论
+     */
+    @GetMapping("/post/{postId}")
+    public Result<List<Comment>> getCommentsByPostId(@PathVariable Long postId) {
+        try {
+            List<Comment> comments = commentService.getCommentsByPostId(postId);
+            return Result.success(comments);
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
     
     /**
