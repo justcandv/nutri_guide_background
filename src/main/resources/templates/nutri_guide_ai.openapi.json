@@ -1,0 +1,430 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "nutri_guide",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [],
+  "paths": {
+    "/ai": {
+      "post": {
+        "summary": "创建AI交互记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "createAIInteraction",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag",
+            "schema": {
+              "type": "string",
+              "default": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "integer",
+                    "description": "用户ID"
+                  },
+                  "user_input": {
+                    "type": "string",
+                    "description": "用户输入"
+                  },
+                  "ai_response": {
+                    "type": "string",
+                    "description": "AI响应"
+                  },
+                  "session_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "会话时间"
+                  }
+                },
+                "required": [
+                  "user_id",
+                  "user_input",
+                  "ai_response",
+                  "session_time"
+                ]
+              },
+              "examples": {
+                "1": {
+                  "value": "",
+                  "description": ""
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "成功创建AI交互记录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    },
+                    "user_input": {
+                      "type": "string"
+                    },
+                    "ai_response": {
+                      "type": "string"
+                    },
+                    "session_time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "400": {
+            "description": "请求参数错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "get": {
+        "summary": "获取所有AI交互记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "getAllAIInteractions",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag",
+            "schema": {
+              "type": "string",
+              "default": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取AI交互记录列表",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "user_id": {
+                        "type": "integer"
+                      },
+                      "user_input": {
+                        "type": "string"
+                      },
+                      "ai_response": {
+                        "type": "string"
+                      },
+                      "session_time": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    },
+    "/ai/{id}": {
+      "get": {
+        "summary": "获取单个AI交互记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "getAIInteractionById",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "AI交互记录ID",
+            "required": true,
+            "example": 0,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag",
+            "schema": {
+              "type": "string",
+              "default": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功获取AI交互记录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    },
+                    "user_input": {
+                      "type": "string"
+                    },
+                    "ai_response": {
+                      "type": "string"
+                    },
+                    "session_time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "AI交互记录未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "put": {
+        "summary": "更新AI交互记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "updateAIInteraction",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "AI交互记录ID",
+            "required": true,
+            "example": 0,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag",
+            "schema": {
+              "type": "string",
+              "default": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_input": {
+                    "type": "string",
+                    "description": "用户输入"
+                  },
+                  "ai_response": {
+                    "type": "string",
+                    "description": "AI响应"
+                  },
+                  "session_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "会话时间"
+                  }
+                }
+              },
+              "examples": {
+                "1": {
+                  "value": "",
+                  "description": ""
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功更新AI交互记录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "user_id": {
+                      "type": "integer"
+                    },
+                    "user_input": {
+                      "type": "string"
+                    },
+                    "ai_response": {
+                      "type": "string"
+                    },
+                    "session_time": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "AI交互记录未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      },
+      "delete": {
+        "summary": "删除AI交互记录",
+        "deprecated": false,
+        "description": "",
+        "operationId": "deleteAIInteraction",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "AI交互记录ID",
+            "required": true,
+            "example": 0,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "example": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag",
+            "schema": {
+              "type": "string",
+              "default": "eyJhbGciOiJIUzUxMiJ9.eyJleHAiOjE3NDE1MDMyNDIsInVzZXJJZCI6NH0.EwTsVtHL5Z2Er9fX4FJLlBxt9UQQyniO4R2WAP8_DOSbc9vrDx0RobO7ajbGx_4OhCaYVT1MG6KcLJ3PWhWaag"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功删除AI交互记录",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          },
+          "404": {
+            "description": "AI交互记录未找到",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "components": {
+    "schemas": {},
+    "securitySchemes": {}
+  },
+  "servers": [],
+  "security": []
+}
