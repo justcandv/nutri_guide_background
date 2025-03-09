@@ -2,6 +2,7 @@ package org.example.nutri_guide_background.controller;
 
 import jakarta.validation.Valid;
 import org.example.nutri_guide_background.common.Result;
+import org.example.nutri_guide_background.dto.AIContinueDTO;
 import org.example.nutri_guide_background.dto.AIInteractionCreateDTO;
 import org.example.nutri_guide_background.dto.AIInteractionUpdateDTO;
 import org.example.nutri_guide_background.entity.AIInteraction;
@@ -31,7 +32,7 @@ public class AIInteractionController {
     private AIInteractionService aiInteractionService;
     
     /**
-     * 创建AI交互记录
+     * 创建AI交互记录并与AI对话
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -70,12 +71,17 @@ public class AIInteractionController {
     }
     
     /**
-     * 更新AI交互记录
+     * 继续AI对话
      */
     @PutMapping("/{id}")
-    public Result<AIInteraction> updateAIInteraction(@PathVariable Long id, @RequestBody AIInteractionUpdateDTO dto) {
+    public Result<AIInteraction> continueAIInteraction(@PathVariable Long id, @Valid @RequestBody AIContinueDTO dto) {
         try {
-            AIInteraction aiInteraction = aiInteractionService.updateAIInteraction(id, dto);
+            // 创建更新DTO
+            AIInteractionUpdateDTO updateDTO = new AIInteractionUpdateDTO();
+            updateDTO.setUserInput(dto.getUserInput());
+            
+            // 更新交互并获取AI响应
+            AIInteraction aiInteraction = aiInteractionService.updateAIInteraction(id, updateDTO);
             return Result.success(aiInteraction);
         } catch (Exception e) {
             return Result.error(e.getMessage());

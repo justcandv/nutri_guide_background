@@ -4,9 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.nutri_guide_background.dto.AIInteractionCreateDTO;
 import org.example.nutri_guide_background.dto.AIInteractionUpdateDTO;
+import org.example.nutri_guide_background.dto.AIResponse;
 import org.example.nutri_guide_background.entity.AIInteraction;
 import org.example.nutri_guide_background.mapper.AIInteractionMapper;
 import org.example.nutri_guide_background.service.AIInteractionService;
+import org.example.nutri_guide_background.service.AIService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,14 +21,25 @@ import java.util.List;
 @Service
 public class AIInteractionServiceImpl extends ServiceImpl<AIInteractionMapper, AIInteraction> implements AIInteractionService {
 
+    @Autowired
+    private AIService aiService;
+    
     @Override
     public AIInteraction createAIInteraction(AIInteractionCreateDTO dto) {
+        // 创建AI交互记录
         AIInteraction aiInteraction = new AIInteraction();
         aiInteraction.setUserId(dto.getUserId());
         aiInteraction.setUserInput(dto.getUserInput());
-        aiInteraction.setAiResponse(dto.getAiResponse());
-        aiInteraction.setSessionTime(dto.getSessionTime());
+        aiInteraction.setSessionTime(LocalDateTime.now());
         
+        // 调用AI服务获取响应
+        AIResponse aiResponse = aiService.chat(dto.getUserInput(), null);
+        
+        // 设置AI响应和对话历史
+        aiInteraction.setAiResponse(aiResponse.getContent());
+        aiInteraction.setConversationHistory(aiResponse.getConversationHistory());
+        
+        // 保存到数据库
         save(aiInteraction);
         return aiInteraction;
     }
@@ -49,18 +63,22 @@ public class AIInteractionServiceImpl extends ServiceImpl<AIInteractionMapper, A
             throw new RuntimeException("AI交互记录不存在");
         }
         
-        if (dto.getUserInput() != null) {
-            aiInteraction.setUserInput(dto.getUserInput());
+        // 获取用户输入
+        String userInput = dto.getUserInput();
+        if (userInput == null || userInput.isEmpty()) {
+            throw new RuntimeException("用户输入不能为空");
         }
         
-        if (dto.getAiResponse() != null) {
-            aiInteraction.setAiResponse(dto.getAiResponse());
-        }
+        // 调用AI服务获取响应，传入历史记录
+        AIResponse aiResponse = aiService.chat(userInput, aiInteraction.getConversationHistory());
         
-        if (dto.getSessionTime() != null) {
-            aiInteraction.setSessionTime(dto.getSessionTime());
-        }
+        // 更新记录
+        aiInteraction.setUserInput(userInput);
+        aiInteraction.setAiResponse(aiResponse.getContent());
+        aiInteraction.setConversationHistory(aiResponse.getConversationHistory());
+        aiInteraction.setSessionTime(LocalDateTime.now());
         
+        // 保存到数据库
         updateById(aiInteraction);
         return aiInteraction;
     }

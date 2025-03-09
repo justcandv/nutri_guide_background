@@ -40,4 +40,10 @@ public class AIInteraction {
      * 会话时间
      */
     private LocalDateTime sessionTime;
+    
+    /**
+     * 对话历史记录
+     */
+    @TableField("conversation_history")
+    private String conversationHistory;
 } 
