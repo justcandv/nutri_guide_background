@@ -51,4 +51,6 @@ public interface AIInteractionService extends IService<AIInteraction> {
      * @return 是否删除成功
      */
     boolean deleteAIInteraction(Long id);
+
+    List<AIInteraction> getAIInteractionsByUserId(Long userId);
 } 

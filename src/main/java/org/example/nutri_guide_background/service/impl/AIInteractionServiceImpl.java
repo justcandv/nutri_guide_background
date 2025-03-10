@@ -92,4 +92,11 @@ public class AIInteractionServiceImpl extends ServiceImpl<AIInteractionMapper, A
         
         return removeById(id);
     }
+
+    @Override
+    public List<AIInteraction> getAIInteractionsByUserId(Long userId) {
+        LambdaQueryWrapper<AIInteraction> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(AIInteraction::getUserId, userId);
+        return list(wrapper);
+    }
 } 

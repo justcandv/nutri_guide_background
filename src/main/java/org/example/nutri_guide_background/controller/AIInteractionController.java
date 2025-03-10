@@ -53,6 +53,16 @@ public class AIInteractionController {
         List<AIInteraction> aiInteractions = aiInteractionService.getAllAIInteractions();
         return Result.success(aiInteractions);
     }
+
+    /**
+     * 根据用户ID获取AI交互记录
+     */
+    @GetMapping("/{userId}/userId")
+    public Result<List<AIInteraction>> getAIInteractionsByUserId(@PathVariable Long userId) {
+        List<AIInteraction> aiInteractions = aiInteractionService.getAIInteractionsByUserId(userId);
+        return Result.success(aiInteractions);
+    }
+
     
     /**
      * 获取单个AI交互记录
