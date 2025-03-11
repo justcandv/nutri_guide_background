@@ -16,15 +16,8 @@ import org.example.nutri_guide_background.service.PostLikeService;
 import org.example.nutri_guide_background.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -169,6 +162,19 @@ public class PostController {
         try {
             boolean liked = postLikeService.likePost(id, dto);
             return Result.success(liked ? "点赞成功" : "取消点赞成功");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 上传图片
+     */
+    @PostMapping("/{id}/upload")
+    public Result<Media> uploadImage(@PathVariable Long id, @RequestBody MultipartFile file) {
+        try {
+            Media media = mediaService.uploadImage(file,id);
+            return Result.success(media);
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
