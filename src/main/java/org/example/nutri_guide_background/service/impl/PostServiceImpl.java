@@ -77,7 +77,16 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         posts.forEach(this::fillUserInfo);
         return posts;
     }
-    
+
+    @Override
+    public List<Post> getPostsByUserId(Long userId) {
+            LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(Post::getUserId, userId)
+                   .eq(Post::getIsDeleted, 0)
+                   .orderByDesc(Post::getCreateTime);
+            return list(wrapper);
+    }
+
     @Override
     public Post getPostById(Long id) {
         LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();

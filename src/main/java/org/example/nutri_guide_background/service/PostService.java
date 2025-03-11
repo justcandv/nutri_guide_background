@@ -58,4 +58,6 @@ public interface PostService extends IService<Post> {
      * @return 帖子列表
      */
     List<Post> getPosts(Long page);
+
+    List<Post> getPostsByUserId(Long userId);
 }

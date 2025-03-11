@@ -90,7 +90,15 @@ public class PostController {
         }
         return Result.success(post);
     }
-    
+    /**
+     * 获取用户发布的帖子
+     */
+    @GetMapping("/{userId}/user")
+    public Result<List<Post>> getPostsByUserId(@PathVariable Long userId) {
+        List<Post> posts = postService.getPostsByUserId(userId);
+        return Result.success(posts);
+    }
+
     /**
      * 更新帖子
      */
