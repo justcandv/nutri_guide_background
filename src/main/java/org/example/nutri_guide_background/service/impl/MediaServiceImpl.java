@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * 媒体服务实现类
@@ -40,5 +41,12 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         save(media);
         
         return media;
+    }
+
+    @Override
+    public List<Media> getMediaByPostId(Long id) {
+        return lambdaQuery()
+                .eq(Media::getPostId, id)
+                .list();
     }
 } 

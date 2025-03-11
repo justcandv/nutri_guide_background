@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import org.example.nutri_guide_background.dto.MediaCreateDTO;
 import org.example.nutri_guide_background.entity.Media;
 
+import java.util.List;
+
 /**
  * 媒体服务接口
  */
@@ -17,4 +19,6 @@ public interface MediaService extends IService<Media> {
      * @return 创建的媒体
      */
     Media addMedia(Long postId, MediaCreateDTO dto);
+
+    List<Media> getMediaByPostId(Long id);
 }

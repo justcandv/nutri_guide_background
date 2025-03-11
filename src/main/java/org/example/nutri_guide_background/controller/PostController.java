@@ -150,6 +150,15 @@ public class PostController {
             return Result.error(e.getMessage());
         }
     }
+
+    /**
+     * 获取帖子的媒体
+     */
+    @GetMapping("/{id}/media")
+    public Result<List<Media>> getMediaByPostId(@PathVariable Long id) {
+        List<Media> media = mediaService.getMediaByPostId(id);
+        return Result.success(media);
+    }
     
     /**
      * 点赞/取消点赞帖子
