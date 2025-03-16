@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.nutri_guide_background.mapper.ProductMapper">
+
+    <select id="selectPageWithCategory" resultType="org.example.nutri_guide_background.entity.Product">
+        SELECT p.*, c.name as categoryName
+        FROM product p
+        LEFT JOIN product_category c ON p.category_id = c.id
+        WHERE p.deleted = 0
+        <if test="categoryId != null">
+            AND p.category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND (p.name LIKE CONCAT('%', #{keyword}, '%') OR p.description LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+</mapper> 

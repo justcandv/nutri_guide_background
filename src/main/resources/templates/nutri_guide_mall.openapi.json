@@ -1,0 +1,1099 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+      "title": "营养指南食品商城API",
+      "description": "营养指南应用食品商城模块的API文档",
+      "version": "1.0.0",
+      "contact": {
+        "name": "API支持团队",
+        "email": "support@nutriguide.com"
+      }
+    },
+    "servers": [
+      {
+        "url": "http://api.nutriguide.com/v1",
+        "description": "生产环境"
+      },
+      {
+        "url": "http://staging-api.nutriguide.com/v1",
+        "description": "测试环境"
+      }
+    ],
+    "tags": [
+      {
+        "name": "商品",
+        "description": "商品相关操作"
+      },
+      {
+        "name": "分类",
+        "description": "商品分类相关操作"
+      },
+      {
+        "name": "购物车",
+        "description": "购物车相关操作"
+      },
+      {
+        "name": "管理员",
+        "description": "管理员商品管理接口"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      },
+      "schemas": {
+        "Product": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            },
+            "name": {
+              "type": "string",
+              "example": "有机全麦面包"
+            },
+            "description": {
+              "type": "string",
+              "example": "营养丰富的全麦面包"
+            },
+            "price": {
+              "type": "number",
+              "format": "float",
+              "example": 15.80
+            },
+            "stock": {
+              "type": "integer",
+              "example": 200
+            },
+            "categoryId": {
+              "type": "integer",
+              "format": "int64",
+              "example": 2
+            },
+            "categoryName": {
+              "type": "string",
+              "example": "烘焙食品"
+            },
+            "coverImageUrl": {
+              "type": "string",
+              "example": "http://example.com/images/bread.jpg"
+            },
+            "sales": {
+              "type": "integer",
+              "example": 1000
+            },
+            "status": {
+              "type": "integer",
+              "enum": [0, 1],
+              "description": "商品状态：0-下架，1-上架",
+              "example": 1
+            },
+            "weight": {
+              "type": "number",
+              "format": "float",
+              "example": 350.00
+            },
+            "nutritionInfo": {
+              "type": "object",
+              "properties": {
+                "calories": {
+                  "type": "number",
+                  "example": 280
+                },
+                "protein": {
+                  "type": "number",
+                  "example": 10.5
+                },
+                "fat": {
+                  "type": "number",
+                  "example": 2.1
+                },
+                "carbohydrates": {
+                  "type": "number",
+                  "example": 52.3
+                },
+                "fiber": {
+                  "type": "number",
+                  "example": 8.2
+                }
+              }
+            },
+            "createTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updateTime": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "ProductDetail": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Product"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "images": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": ["http://example.com/images/bread1.jpg", "http://example.com/images/bread2.jpg"]
+                }
+              }
+            }
+          ]
+        },
+        "Category": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            },
+            "name": {
+              "type": "string",
+              "example": "蔬果"
+            },
+            "iconUrl": {
+              "type": "string",
+              "example": "http://example.com/icons/vegetables.png"
+            },
+            "children": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "CartItem": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            },
+            "productId": {
+              "type": "integer",
+              "format": "int64",
+              "example": 1
+            },
+            "productName": {
+              "type": "string",
+              "example": "有机全麦面包"
+            },
+            "productImage": {
+              "type": "string",
+              "example": "http://example.com/images/bread.jpg"
+            },
+            "price": {
+              "type": "number",
+              "format": "float",
+              "example": 15.80
+            },
+            "quantity": {
+              "type": "integer",
+              "example": 2
+            },
+            "selected": {
+              "type": "boolean",
+              "example": true
+            },
+            "stock": {
+              "type": "integer",
+              "example": 200
+            }
+          }
+        },
+        "CartList": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/CartItem"
+              }
+            },
+            "totalAmount": {
+              "type": "number",
+              "format": "float",
+              "example": 31.60
+            },
+            "selectedCount": {
+              "type": "integer",
+              "example": 2
+            }
+          }
+        },
+        "ApiResponse": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "example": 200
+            },
+            "message": {
+              "type": "string",
+              "example": "成功"
+            },
+            "data": {
+              "type": ["object", "null"]
+            }
+          }
+        }
+      }
+    },
+    "paths": {
+      "/api/products": {
+        "get": {
+          "summary": "获取商品列表",
+          "description": "根据条件获取商品列表，支持分页和排序",
+          "tags": ["商品"],
+          "parameters": [
+            {
+              "name": "categoryId",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            },
+            {
+              "name": "keyword",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "page",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 1
+              }
+            },
+            {
+              "name": "size",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "integer",
+                "default": 10
+              }
+            },
+            {
+              "name": "sort",
+              "in": "query",
+              "required": false,
+              "schema": {
+                "type": "string",
+                "enum": ["price_asc", "price_desc", "sales_desc"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "object",
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "example": 100
+                              },
+                              "pages": {
+                                "type": "integer",
+                                "example": 10
+                              },
+                              "list": {
+                                "type": "array",
+                                "items": {
+                                  "$ref": "#/components/schemas/Product"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/products/{id}": {
+        "get": {
+          "summary": "获取商品详情",
+          "description": "根据商品ID获取商品详细信息",
+          "tags": ["商品"],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "$ref": "#/components/schemas/ProductDetail"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "商品不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "integer",
+                            "example": 404
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "商品不存在"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/product/categories": {
+        "get": {
+          "summary": "获取商品分类",
+          "description": "获取商品分类列表，支持多级分类",
+          "tags": ["分类"],
+          "responses": {
+            "200": {
+              "description": "成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/Category"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/cart/add": {
+        "post": {
+          "summary": "添加商品到购物车",
+          "description": "将商品添加到当前用户的购物车",
+          "tags": ["购物车"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["productId", "quantity"],
+                  "properties": {
+                    "productId": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "添加成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "integer",
+                            "example": 400
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "参数错误"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "404": {
+              "description": "商品不存在"
+            }
+          }
+        }
+      },
+      "/api/cart/list": {
+        "get": {
+          "summary": "获取购物车列表",
+          "description": "获取当前用户的购物车商品列表",
+          "tags": ["购物车"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "$ref": "#/components/schemas/CartList"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权"
+            }
+          }
+        }
+      },
+      "/api/cart/update": {
+        "post": {
+          "summary": "更新购物车商品数量",
+          "description": "更新购物车中指定商品的数量",
+          "tags": ["购物车"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["id", "quantity"],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    },
+                    "quantity": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "example": 2
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "更新成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误"
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "404": {
+              "description": "购物车项不存在"
+            }
+          }
+        }
+      },
+      "/api/cart/delete": {
+        "post": {
+          "summary": "删除购物车商品",
+          "description": "从购物车中删除指定的商品",
+          "tags": ["购物车"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["ids"],
+                  "properties": {
+                    "ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "integer",
+                        "format": "int64"
+                      },
+                      "example": [1, 2]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "删除成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误"
+            },
+            "401": {
+              "description": "未授权"
+            }
+          }
+        }
+      },
+      "/api/cart/select": {
+        "post": {
+          "summary": "选择/取消选择购物车商品",
+          "description": "选择或取消选择购物车中的商品",
+          "tags": ["购物车"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["id", "selected"],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    },
+                    "selected": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误"
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "404": {
+              "description": "购物车项不存在"
+            }
+          }
+        }
+      },
+      "/api/cart/clear": {
+        "post": {
+          "summary": "清空购物车",
+          "description": "清空当前用户的购物车",
+          "tags": ["购物车"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "清空成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权"
+            }
+          }
+        }
+      },
+      "/api/admin/products/add": {
+        "post": {
+          "summary": "添加商品",
+          "description": "管理员添加新商品",
+          "tags": ["管理员"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["name", "price", "categoryId", "stock"],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "example": "有机全麦面包"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "营养丰富的全麦面包"
+                    },
+                    "price": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 15.80
+                    },
+                    "stock": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "categoryId": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 2
+                    },
+                    "coverImageUrl": {
+                      "type": "string",
+                      "example": "http://example.com/images/bread.jpg"
+                    },
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["http://example.com/images/bread1.jpg", "http://example.com/images/bread2.jpg"]
+                    },
+                    "weight": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 350.00
+                    },
+                    "nutritionInfo": {
+                      "type": "object",
+                      "example": {
+                        "calories": 280,
+                        "protein": 10.5,
+                        "fat": 2.1,
+                        "carbohydrates": 52.3,
+                        "fiber": 8.2
+                      }
+                    },
+                    "status": {
+                      "type": "integer",
+                      "enum": [0, 1],
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "添加成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/ApiResponse"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "data": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer",
+                                "format": "int64",
+                                "example": 1
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误"
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "403": {
+              "description": "权限不足"
+            }
+          }
+        }
+      },
+      "/api/admin/products/update": {
+        "post": {
+          "summary": "更新商品",
+          "description": "管理员更新商品信息",
+          "tags": ["管理员"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["id"],
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "有机全麦面包"
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "营养丰富的全麦面包"
+                    },
+                    "price": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 15.80
+                    },
+                    "stock": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "categoryId": {
+                      "type": "integer",
+                      "format": "int64",
+                      "example": 2
+                    },
+                    "coverImageUrl": {
+                      "type": "string",
+                      "example": "http://example.com/images/bread.jpg"
+                    },
+                    "images": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": ["http://example.com/images/bread1.jpg", "http://example.com/images/bread2.jpg"]
+                    },
+                    "weight": {
+                      "type": "number",
+                      "format": "float",
+                      "example": 350.00
+                    },
+                    "nutritionInfo": {
+                      "type": "object",
+                      "example": {
+                        "calories": 280,
+                        "protein": 10.5,
+                        "fat": 2.1,
+                        "carbohydrates": 52.3,
+                        "fiber": 8.2
+                      }
+                    },
+                    "status": {
+                      "type": "integer",
+                      "enum": [0, 1],
+                      "example": 1
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "更新成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误"
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "403": {
+              "description": "权限不足"
+            },
+            "404": {
+              "description": "商品不存在"
+            }
+          }
+        }
+      },
+      "/api/admin/products/{id}/delete": {
+        "post": {
+          "summary": "删除商品",
+          "description": "管理员删除商品",
+          "tags": ["管理员"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "删除成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "403": {
+              "description": "权限不足"
+            },
+            "404": {
+              "description": "商品不存在"
+            }
+          }
+        }
+      },
+      "/api/admin/products/{id}/status": {
+        "post": {
+          "summary": "商品上下架",
+          "description": "管理员设置商品上下架状态",
+          "tags": ["管理员"],
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status"],
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "enum": [0, 1],
+                      "example": 1,
+                      "description": "商品状态：0-下架，1-上架"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "操作成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "请求参数错误"
+            },
+            "401": {
+              "description": "未授权"
+            },
+            "403": {
+              "description": "权限不足"
+            },
+            "404": {
+              "description": "商品不存在"
+            }
+          }
+        }
+      }
+    }
+  }

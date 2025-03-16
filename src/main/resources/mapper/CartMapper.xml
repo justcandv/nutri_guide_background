@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.nutri_guide_background.mapper.CartMapper">
+
+    <select id="selectCartItemsByUserId" resultType="org.example.nutri_guide_background.dto.CartItemVO">
+        SELECT c.id, c.product_id as productId, p.name as productName, 
+               p.cover_image_url as productImage, p.price, c.quantity, 
+               c.selected, p.stock
+        FROM cart c
+        LEFT JOIN product p ON c.product_id = p.id
+        WHERE c.user_id = #{userId} AND p.deleted = 0
+    </select>
+
+</mapper> 
