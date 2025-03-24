@@ -25,7 +25,7 @@ public class PostLikeServiceImpl extends ServiceImpl<PostLikeMapper, PostLike> i
 
     @Override
     @Transactional
-    public boolean likePost(Long postId, PostLikeDTO dto) {
+    public boolean likePost(Long postId,Long userId) {
         // 查询帖子是否存在
         Post post = postMapper.selectById(postId);
         if (post == null || post.getIsDeleted() == 1) {
@@ -35,7 +35,7 @@ public class PostLikeServiceImpl extends ServiceImpl<PostLikeMapper, PostLike> i
         // 查询是否已点赞
         LambdaQueryWrapper<PostLike> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PostLike::getPostId, postId)
-               .eq(PostLike::getUserId, dto.getUserId());
+               .eq(PostLike::getUserId, userId);
         
         PostLike existingLike = getOne(wrapper, false);
         
@@ -46,12 +46,13 @@ public class PostLikeServiceImpl extends ServiceImpl<PostLikeMapper, PostLike> i
             postMapper.updateById(post);
             
             // 删除点赞记录
-            return remove(wrapper);
+            remove(wrapper);
+            return false;
         } else {
             // 创建点赞记录
             PostLike postLike = new PostLike();
             postLike.setPostId(postId);
-            postLike.setUserId(dto.getUserId());
+            postLike.setUserId(userId);
             postLike.setCreateTime(LocalDateTime.now());
             
             // 更新帖子点赞数

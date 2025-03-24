@@ -13,8 +13,7 @@ public interface PostLikeService extends IService<PostLike> {
      * 点赞帖子
      *
      * @param postId 帖子ID
-     * @param dto 点赞DTO
      * @return 是否点赞成功
      */
-    boolean likePost(Long postId, PostLikeDTO dto);
+    boolean likePost(Long postId, Long userId);
 } 

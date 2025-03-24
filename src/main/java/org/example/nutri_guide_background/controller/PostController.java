@@ -16,6 +16,8 @@ import org.example.nutri_guide_background.service.PostLikeService;
 import org.example.nutri_guide_background.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +41,15 @@ public class PostController {
     
     @Autowired
     private PostLikeService postLikeService;
-    
+
+    private Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof Long) {
+            return (Long) authentication.getPrincipal();
+        }
+        return 0L;
+    }
+
     /**
      * 创建帖子
      */
@@ -158,9 +168,9 @@ public class PostController {
      */
     @PostMapping("/{id}/likes")
     @ResponseStatus(HttpStatus.CREATED)
-    public Result<String> likePost(@PathVariable Long id, @Valid @RequestBody PostLikeDTO dto) {
+    public Result<String> likePost(@PathVariable Long id) {
         try {
-            boolean liked = postLikeService.likePost(id, dto);
+            boolean liked = postLikeService.likePost(id, getCurrentUserId());
             return Result.success(liked ? "点赞成功" : "取消点赞成功");
         } catch (Exception e) {
             return Result.error(e.getMessage());
