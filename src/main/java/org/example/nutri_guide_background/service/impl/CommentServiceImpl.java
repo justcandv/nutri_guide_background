@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.example.nutri_guide_background.dto.CommentCreateDTO;
 import org.example.nutri_guide_background.entity.Comment;
 import org.example.nutri_guide_background.entity.Post;
+import org.example.nutri_guide_background.entity.User;
 import org.example.nutri_guide_background.mapper.CommentMapper;
 import org.example.nutri_guide_background.mapper.PostMapper;
+import org.example.nutri_guide_background.mapper.UserMapper;
 import org.example.nutri_guide_background.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 评论服务实现类
@@ -23,6 +26,28 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
 
     @Autowired
     private PostMapper postMapper;
+    
+    @Autowired
+    private UserMapper userMapper;
+
+    // 填充评论的用户信息（用户名和头像）
+    private Comment fillCommentUsername(Comment comment) {
+        if (comment != null && comment.getUserId() != null) {
+            User user = userMapper.selectById(comment.getUserId());
+            if (user != null) {
+                comment.setUsername(user.getUsername());
+                comment.setAvatarUrl(user.getAvatarUrl());
+            }
+        }
+        return comment;
+    }
+    
+    // 批量填充评论列表的用户信息
+    private List<Comment> fillCommentsUsername(List<Comment> comments) {
+        return comments.stream()
+                .map(this::fillCommentUsername)
+                .collect(Collectors.toList());
+    }
 
     @Override
     @Transactional
@@ -48,12 +73,14 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         post.setCommentCount(post.getCommentCount() + 1);
         postMapper.updateById(post);
         
-        return comment;
+        // 填充用户信息并返回
+        return fillCommentUsername(comment);
     }
 
     @Override
     public Comment getCommentById(Long id) {
-        return getById(id);
+        Comment comment = getById(id);
+        return fillCommentUsername(comment);
     }
     
     @Override
@@ -70,8 +97,9 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
                .orderByAsc(Comment::getParentId)  // 先按父评论ID排序
                .orderByDesc(Comment::getCreateTime);  // 再按创建时间降序排序
         
-        // 查询评论列表
-        return list(wrapper);
+        // 查询评论列表并填充用户信息
+        List<Comment> comments = list(wrapper);
+        return fillCommentsUsername(comments);
     }
 
     @Override
