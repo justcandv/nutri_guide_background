@@ -59,5 +59,21 @@ public interface PostService extends IService<Post> {
      */
     List<Post> getPosts(Long page);
 
+    /**
+     * 根据用户ID获取帖子
+     *
+     * @param userId 用户ID
+     * @return 帖子列表
+     */
     List<Post> getPostsByUserId(Long userId);
+    
+    /**
+     * 根据关键词搜索帖子
+     *
+     * @param keyword 搜索关键词
+     * @param page 页码
+     * @param size 每页大小
+     * @return 符合条件的帖子列表
+     */
+    List<Post> searchPostsByKeyword(String keyword, Long page, Integer size);
 }

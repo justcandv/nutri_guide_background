@@ -137,4 +137,33 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         post.setIsDeleted(1);
         return updateById(post);
     }
+    
+    @Override
+    public List<Post> searchPostsByKeyword(String keyword, Long page, Integer size) {
+        // 默认值处理
+        long currentPage = (page == null || page < 1) ? 1 : page;
+        int pageSize = (size == null || size < 1) ? 10 : size;
+        
+        // 创建分页对象
+        Page<Post> pageParam = new Page<>(currentPage, pageSize);
+        
+        // 构建查询条件
+        LambdaQueryWrapper<Post> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Post::getIsDeleted, 0)
+               .and(keyword != null && !keyword.trim().isEmpty(), 
+                    w -> w.like(Post::getTitle, keyword)
+                          .or()
+                          .like(Post::getContent, keyword)
+               )
+               .orderByDesc(Post::getLikeCount);
+        
+        // 执行分页查询
+        Page<Post> postPage = page(pageParam, wrapper);
+        List<Post> posts = postPage.getRecords();
+        
+        // 填充用户信息
+        posts.forEach(this::fillUserInfo);
+        
+        return posts;
+    }
 }

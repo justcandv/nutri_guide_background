@@ -189,4 +189,25 @@ public class PostController {
             return Result.error(e.getMessage());
         }
     }
+    
+    /**
+     * 搜索帖子
+     * 
+     * @param keyword 搜索关键词
+     * @param page 页码，默认1
+     * @param size 每页大小，默认10
+     * @return 符合条件的帖子列表
+     */
+    @GetMapping("/search")
+    public Result<List<Post>> searchPosts(
+            @RequestParam String keyword,
+            @RequestParam(required = false, defaultValue = "1") Long page,
+            @RequestParam(required = false, defaultValue = "10") Integer size) {
+        try {
+            List<Post> posts = postService.searchPostsByKeyword(keyword, page, size);
+            return Result.success(posts);
+        } catch (Exception e) {
+            return Result.error("搜索失败：" + e.getMessage());
+        }
+    }
 } 
