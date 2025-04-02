@@ -21,4 +21,9 @@ public class MediaCreateDTO {
      */
     @NotNull(message = "媒体类型不能为空")
     private Integer type;
+    
+    /**
+     * 文件二进制内容（可选）
+     */
+    private byte[] fileContent;
 } 

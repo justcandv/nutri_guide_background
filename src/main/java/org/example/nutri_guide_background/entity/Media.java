@@ -26,7 +26,7 @@ public class Media {
     private Long postId;
     
     /**
-     * 文件存储路径
+     * 文件名称或访问路径
      */
     private String url;
     
@@ -39,4 +39,9 @@ public class Media {
      * 创建时间
      */
     private LocalDateTime createTime;
+    
+    /**
+     * 文件二进制内容
+     */
+    private byte[] fileContent;
 } 

@@ -16,6 +16,8 @@ import org.example.nutri_guide_background.service.PostLikeService;
 import org.example.nutri_guide_background.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -208,6 +210,50 @@ public class PostController {
             return Result.success(posts);
         } catch (Exception e) {
             return Result.error("搜索失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取图片内容
+     * 
+     * @param mediaId 媒体ID
+     * @return 图片二进制内容
+     */
+    @GetMapping("/media/{mediaId}/content")
+    public ResponseEntity<byte[]> getImageContent(@PathVariable Long mediaId) {
+        try {
+            Media media = mediaService.getById(mediaId);
+            if (media == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            if (media.getFileContent() == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // 根据媒体类型设置正确的内容类型
+            MediaType contentType;
+            if (media.getType() == 1) { // 图片
+                // 这里简化处理，实际应用中可能需要根据文件名后缀判断具体图片类型
+                String fileName = media.getUrl().toLowerCase();
+                if (fileName.endsWith(".png")) {
+                    contentType = MediaType.IMAGE_PNG;
+                } else if (fileName.endsWith(".gif")) {
+                    contentType = MediaType.IMAGE_GIF;
+                } else {
+                    contentType = MediaType.IMAGE_JPEG;
+                }
+            } else if (media.getType() == 2) { // 视频
+                contentType = MediaType.valueOf("video/mp4"); // 假设视频都是MP4格式
+            } else {
+                contentType = MediaType.APPLICATION_OCTET_STREAM; // 默认二进制流
+            }
+            
+            return ResponseEntity.ok()
+                    .contentType(contentType)
+                    .body(media.getFileContent());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 } 

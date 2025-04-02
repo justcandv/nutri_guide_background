@@ -44,6 +44,11 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
         media.setType(dto.getType());
         media.setCreateTime(LocalDateTime.now());
         
+        // 设置文件内容（如果有）
+        if (dto.getFileContent() != null) {
+            media.setFileContent(dto.getFileContent());
+        }
+        
         // 保存媒体记录
         save(media);
         
@@ -60,45 +65,36 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
 
     @Override
     public Media uploadImage(MultipartFile file, Long postId) {
-        String uploadPath = "src/main/resources/uploads";
-
-        // 生成唯一文件名
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        Path filePath = Paths.get(uploadPath, fileName);
         try {
-            // 创建存储目录（如果不存在）
-            Files.createDirectories(filePath.getParent());
-            // 保存文件
-            Files.write(filePath, file.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            // 查询帖子是否存在
+            Post post = postMapper.selectById(postId);
+            if (post == null || post.getIsDeleted() == 1) {
+                throw new RuntimeException("帖子不存在或已删除");
+            }
+
+            // 生成唯一文件名
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            
+            // 创建媒体记录
+            Media media = new Media();
+            media.setPostId(postId);
+            media.setUrl(fileName); // 保存文件名，不再是文件路径
+            media.setType(1); // 1-图片
+            media.setCreateTime(LocalDateTime.now());
+            
+            // 存储文件内容到数据库
+            try {
+                media.setFileContent(file.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("文件读取失败", e);
+            }
+            
+            // 保存媒体记录
+            save(media);
+            return media;
+        } catch (Exception e) {
+            throw new RuntimeException("上传图片失败: " + e.getMessage(), e);
         }
-
-        String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path(uploadPath)
-                .path(fileName)
-                .toUriString();
-
-        MediaCreateDTO dto = new MediaCreateDTO();
-        dto.setUrl(fileUrl);
-        dto.setType(1);
-
-        // 查询帖子是否存在
-        Post post = postMapper.selectById(postId);
-        if (post == null || post.getIsDeleted() == 1) {
-            throw new RuntimeException("帖子不存在或已删除");
-        }
-
-        // 创建媒体记录
-        Media media = new Media();
-        media.setPostId(postId);
-        media.setUrl(dto.getUrl());
-        media.setType(dto.getType());
-        media.setCreateTime(LocalDateTime.now());
-
-        // 保存媒体记录
-        save(media);
-        return media;
     }
 
 } 
