@@ -78,7 +78,11 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
             // 创建媒体记录
             Media media = new Media();
             media.setPostId(postId);
-            media.setUrl(fileName); // 保存文件名，不再是文件路径
+            
+            // 生成完整的访问URL路径，而不仅仅是文件名
+            // 使用相对路径 "/posts/media/{id}/content" 的格式
+            // 注意：此处先保存一个临时值，在save后获取到media的id再更新
+            media.setUrl(fileName); // 临时设置为文件名
             media.setType(1); // 1-图片
             media.setCreateTime(LocalDateTime.now());
             
@@ -91,10 +95,36 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
             
             // 保存媒体记录
             save(media);
+            
+            // 获取到ID后更新URL为完整的访问路径
+            // 使用ServletUriComponentsBuilder生成完整的URL（包含域名）
+            String accessUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/posts/media/")
+                    .path(media.getId().toString())
+                    .path("/content")
+                    .toUriString();
+            media.setUrl(accessUrl);
+            
+            // 更新媒体记录
+            updateById(media);
+            
             return media;
         } catch (Exception e) {
             throw new RuntimeException("上传图片失败: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public Media getMediaWithContent(Long mediaId) {
+        Media media = getById(mediaId);
+        
+        if (media != null && media.getFileContent() == null) {
+            // 如果没有获取到文件内容，尝试从数据库重新加载
+            // 这里使用Mapper直接查询可以避免被JsonIgnore影响
+            media = baseMapper.selectById(mediaId);
+        }
+        
+        return media;
     }
 
 } 

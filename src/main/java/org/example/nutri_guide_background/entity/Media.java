@@ -3,6 +3,7 @@ package org.example.nutri_guide_background.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,8 @@ public class Media {
     
     /**
      * 文件二进制内容
+     * 使用@JsonIgnore注解防止在一般接口中被序列化
      */
+    @JsonIgnore
     private byte[] fileContent;
 } 

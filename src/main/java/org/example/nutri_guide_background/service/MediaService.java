@@ -24,4 +24,12 @@ public interface MediaService extends IService<Media> {
     List<Media> getMediaByPostId(Long id);
 
     Media uploadImage(MultipartFile file, Long postId);
+    
+    /**
+     * 获取包含二进制内容的媒体对象，用于内容下载接口
+     *
+     * @param mediaId 媒体ID
+     * @return 包含文件内容的媒体对象
+     */
+    Media getMediaWithContent(Long mediaId);
 }

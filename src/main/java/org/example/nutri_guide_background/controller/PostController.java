@@ -222,7 +222,7 @@ public class PostController {
     @GetMapping("/media/{mediaId}/content")
     public ResponseEntity<byte[]> getImageContent(@PathVariable Long mediaId) {
         try {
-            Media media = mediaService.getById(mediaId);
+            Media media = mediaService.getMediaWithContent(mediaId);
             if (media == null) {
                 return ResponseEntity.notFound().build();
             }
