@@ -2,6 +2,7 @@ package org.example.nutri_guide_background.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,63 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     
     @Autowired
     private ProductImageMapper productImageMapper;
+
+    @Override
+    public List<Product> listByCategoryId(Long categoryId) {
+        return list(new LambdaQueryWrapper<Product>()
+                .eq(Product::getCategoryId, categoryId)
+                .eq(Product::getStatus, 1)  // 上架状态
+                .orderByDesc(Product::getCreateTime));
+    }
+
+    @Override
+    public Page<Product> pageProducts(Integer pageNum, Integer pageSize, Long categoryId, String keyword) {
+        Page<Product> page = new Page<>(pageNum, pageSize);
+        
+        LambdaQueryWrapper<Product> queryWrapper = new LambdaQueryWrapper<Product>()
+                .eq(categoryId != null, Product::getCategoryId, categoryId)
+                .like(StringUtils.hasText(keyword), Product::getName, keyword)
+                .eq(Product::getStatus, 1)  // 上架状态
+                .orderByDesc(Product::getCreateTime);
+        
+        return page(page, queryWrapper);
+    }
+
+    @Override
+    @Transactional
+    public boolean decreaseStock(Long productId, Integer quantity) {
+        Product product = getById(productId);
+        if (product == null) {
+            throw new IllegalArgumentException("商品不存在");
+        }
+        
+        if (product.getStock() < quantity) {
+            throw new IllegalStateException("商品库存不足");
+        }
+        
+        boolean result = update(new LambdaUpdateWrapper<Product>()
+                .eq(Product::getId, productId)
+                .ge(Product::getStock, quantity)
+                .setSql("stock = stock - " + quantity)
+                .setSql("sales = sales + " + quantity));
+        
+        if (!result) {
+            throw new IllegalStateException("更新库存失败，可能库存不足");
+        }
+        
+        return true;
+    }
+
+    // 获取商品主图，用于订单显示
+    public String getMainImage(Long productId) {
+        LambdaQueryWrapper<ProductImage> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ProductImage::getProductId, productId);
+        wrapper.orderByAsc(ProductImage::getSortOrder);
+        wrapper.last("LIMIT 1");
+        
+        ProductImage image = productImageMapper.selectOne(wrapper);
+        return image != null ? image.getImageUrl() : null;
+    }
 
     @Override
     public Result<Page<Product>> getProductList(Long categoryId, String keyword, Integer page, Integer size, String sort) {
