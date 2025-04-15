@@ -23,6 +23,8 @@ public interface MediaService extends IService<Media> {
 
     List<Media> getMediaByPostId(Long id);
 
+    Media getOneMediaByPostId(Long id);
+
     Media uploadImage(MultipartFile file, Long postId);
     
     /**

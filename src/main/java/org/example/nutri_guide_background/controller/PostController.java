@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -164,7 +165,18 @@ public class PostController {
         List<Media> media = mediaService.getMediaByPostId(id);
         return Result.success(media);
     }
-    
+
+
+    /**
+     * 获取单个帖子的媒体
+     */
+    @GetMapping("/{id}/media/one")
+    public Result<List<Media>> getOneMediaByPostId(@PathVariable Long id) {
+        List<Media> media = Collections.singletonList(mediaService.getOneMediaByPostId(id));
+        return Result.success(media);
+    }
+
+
     /**
      * 点赞/取消点赞帖子
      */

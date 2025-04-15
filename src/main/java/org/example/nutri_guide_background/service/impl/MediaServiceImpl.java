@@ -62,6 +62,14 @@ public class MediaServiceImpl extends ServiceImpl<MediaMapper, Media> implements
                 .list();
     }
 
+    @Override
+    public Media getOneMediaByPostId(Long id) {
+        return lambdaQuery()
+                .eq(Media::getPostId, id)
+                .last("LIMIT 1") // 只取一条记录
+                .one();
+    }
+
 
     @Override
     public Media uploadImage(MultipartFile file, Long postId) {
