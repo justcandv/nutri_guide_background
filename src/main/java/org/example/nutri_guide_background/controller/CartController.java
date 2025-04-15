@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.example.nutri_guide_background.common.Result;
 import org.example.nutri_guide_background.dto.CartDTO;
 import org.example.nutri_guide_background.dto.CartListVO;
+import org.example.nutri_guide_background.dto.IdsWrapper;
 import org.example.nutri_guide_background.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -45,7 +46,8 @@ public class CartController {
     }
 
     @PostMapping("/delete")
-    public Result<Void> deleteCart(@RequestBody List<Long> ids) {
+    public Result<Void> deleteCart(@RequestBody IdsWrapper wrapper) {
+        List<Long> ids = wrapper.getIds();
         return cartService.deleteCart(ids, getCurrentUserId());
     }
 
@@ -60,4 +62,4 @@ public class CartController {
     public Result<Void> clearCart() {
         return cartService.clearCart(getCurrentUserId());
     }
-} 
+}
