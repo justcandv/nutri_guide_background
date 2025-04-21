@@ -172,8 +172,9 @@ public class PostController {
      */
     @GetMapping("/{id}/media/one")
     public Result<List<Media>> getOneMediaByPostId(@PathVariable Long id) {
-        List<Media> media = Collections.singletonList(mediaService.getOneMediaByPostId(id));
-        return Result.success(media);
+        Media media = mediaService.getOneMediaByPostId(id);
+        if (media == null) return Result.success(Collections.emptyList());;
+        return Result.success(List.of(media));
     }
 
 
