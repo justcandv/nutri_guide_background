@@ -49,11 +49,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     @Override
     @Transactional
     public Long createOrder(OrderDTO orderDTO, Long userId) {
-        // 1. 校验地址
-        Address address = addressService.getAddressDetail(orderDTO.getAddressId(), userId);
-        if (address == null) {
-            throw new IllegalArgumentException("收货地址不存在");
-        }
+//        // 1. 校验地址
+//        Address address = addressService.getAddressDetail(orderDTO.getAddressId(), userId);
+//        if (address == null) {
+//            throw new IllegalArgumentException("收货地址不存在");
+//        }
 
         // 2. 校验商品
         List<OrderItem> orderItems = new ArrayList<>();
@@ -90,7 +90,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         order.setTotalAmount(totalAmount);
         order.setActualAmount(totalAmount); // 实际金额暂时等于总金额，后续可扩展优惠券等
         order.setStatus(0); // 待支付
-        order.setAddressId(address.getId());
+//        order.setAddressId(address.getId());
         order.setRemark(orderDTO.getRemark());
         
         // 4. 保存订单

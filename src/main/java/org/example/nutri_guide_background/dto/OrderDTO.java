@@ -15,8 +15,7 @@ import java.util.List;
 public class OrderDTO {
     
     private Long id;
-    
-    @NotNull(message = "地址ID不能为空")
+
     private Long addressId;
     
     @Valid
