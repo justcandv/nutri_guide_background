@@ -49,7 +49,6 @@ public class Post {
     /**
      * 是否删除（0-正常 1-删除）
      */
-    @TableLogic
     private Integer isDeleted;
     
     /**
