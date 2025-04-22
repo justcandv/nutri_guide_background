@@ -19,8 +19,9 @@ public class JwtUtils {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(Long userId) {
+    public String generateToken(Long userId, String role) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
         claims.put("userId", userId);
         return Jwts.builder()
                 .setClaims(claims)
@@ -35,6 +36,14 @@ public class JwtUtils {
                 .parseClaimsJws(token)
                 .getBody();
         return claims.get("userId", Long.class);
+    }
+
+    public String getRoleFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secret)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get("role", String.class);
     }
 
     public boolean validateToken(String token) {

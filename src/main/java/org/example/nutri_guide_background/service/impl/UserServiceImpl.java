@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 生成token
-        String token = jwtUtils.generateToken(user.getId());
+        String token = jwtUtils.generateToken(user.getId(),user.getRole());
         Map<String, Object> map = new HashMap<>();
         map.put("token", token);
         user.setPassword(null);

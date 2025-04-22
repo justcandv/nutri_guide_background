@@ -47,10 +47,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = extractToken(request);
             if (token != null && jwtUtils.validateToken(token)) {
                 Long userId = jwtUtils.getUserIdFromToken(token);
-                
+                String role = jwtUtils.getRoleFromToken(token);
+                if (role.equals("admin")) role = "ROLE_ADMIN";
+                else if (role.equals("user")) role = "ROLE_USER";
                 // 添加USER角色权限
                 List<SimpleGrantedAuthority> authorities = 
-                    Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                    Collections.singletonList(new SimpleGrantedAuthority(role));
                     
                 UsernamePasswordAuthenticationToken authentication = 
                     new UsernamePasswordAuthenticationToken(userId, null, authorities);
