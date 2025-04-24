@@ -96,27 +96,38 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
         return image != null ? image.getImageUrl() : null;
     }
 
-    @Override
-    public Result<Page<Product>> getProductList(Long categoryId, String keyword, Integer page, Integer size, String sort) {
-        Page<Product> pageParam = new Page<>(page, size);
-        
-        if (sort != null) {
-            QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-            if ("price_asc".equals(sort)) {
-                queryWrapper.orderByAsc("price");
-            } else if ("price_desc".equals(sort)) {
-                queryWrapper.orderByDesc("price");
-            } else if ("sales_desc".equals(sort)) {
-                queryWrapper.orderByDesc("sales");
-            }
-        }
-        
-        IPage<Product> productIPage = productMapper.selectPageWithCategory(pageParam, categoryId, keyword);
-        Page<Product> productPage = new Page<>(productIPage.getCurrent(), productIPage.getSize(), productIPage.getTotal());
-        productPage.setRecords(productIPage.getRecords());
-        
-        return Result.success(productPage);
+@Override
+public Result<Page<Product>> getProductList(Long categoryId, String keyword, Integer page, Integer size, String sort) {
+    Page<Product> pageParam = new Page<>(page, size);
+
+    QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+    queryWrapper.eq("status", 1);  // 添加状态条件
+
+    if (categoryId != null) {
+        queryWrapper.eq("category_id", categoryId);
     }
+
+    if (StringUtils.hasText(keyword)) {
+        queryWrapper.like("name", keyword);
+    }
+
+    if (sort != null) {
+        if ("price_asc".equals(sort)) {
+            queryWrapper.orderByAsc("price");
+        } else if ("price_desc".equals(sort)) {
+            queryWrapper.orderByDesc("price");
+        } else if ("sales_desc".equals(sort)) {
+            queryWrapper.orderByDesc("sales");
+        }
+    }
+
+    IPage<Product> productIPage = productMapper.selectPage(pageParam, queryWrapper);
+    Page<Product> productPage = new Page<>(productIPage.getCurrent(), productIPage.getSize(), productIPage.getTotal());
+    productPage.setRecords(productIPage.getRecords());
+
+    return Result.success(productPage);
+}
+
 
     @Override
     public Result<ProductDetailVO> getProductDetail(Long id) {
