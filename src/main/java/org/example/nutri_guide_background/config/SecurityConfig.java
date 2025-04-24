@@ -30,8 +30,6 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())  // 禁用CSRF保护
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/user/login", "/user/register").permitAll()
-                .requestMatchers(HttpMethod.GET, "/user/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/user/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/user/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )

@@ -53,5 +53,5 @@ public interface ProductService extends IService<Product> {
     
     Result<Void> deleteProduct(Long id);
     
-    Result<Void> updateProductStatus(Long id, Integer status);
+    Result<Void> updateProductStatus(Long id);
 } 

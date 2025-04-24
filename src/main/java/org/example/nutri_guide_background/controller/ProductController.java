@@ -51,8 +51,7 @@ public class ProductController {
 
     @PostMapping("/admin/{id}/status")
     public Result<Void> updateProductStatus(
-            @PathVariable Long id,
-            @RequestParam Integer status) {
-        return productService.updateProductStatus(id, status);
+            @PathVariable Long id) {
+        return productService.updateProductStatus(id);
     }
 } 

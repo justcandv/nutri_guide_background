@@ -231,13 +231,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product> impl
     }
 
     @Override
-    public Result<Void> updateProductStatus(Long id, Integer status) {
+    public Result<Void> updateProductStatus(Long id) {
         Product product = productMapper.selectById(id);
         if (product == null) {
             return Result.error("商品不存在");
         }
         
-        product.setStatus(status);
+        product.setStatus(product.getStatus() == 1 ? 0 : 1);
         productMapper.updateById(product);
         
         return Result.success(null);
